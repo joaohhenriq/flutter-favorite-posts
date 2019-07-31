@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_favorite_posts/pages/post_page.dart';
 
 void main() => runApp(MyApp());
 
@@ -8,19 +9,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
-      home: MyHomePage(),
+      home: PostPage(),
+      debugShowCheckedModeBanner: false,
     );
-  }
-}
-
-class MyHomePage extends StatefulWidget {
-  @override
-  _MyHomePageState createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  @override
-  Widget build(BuildContext context) {
-    return Container();
   }
 }
