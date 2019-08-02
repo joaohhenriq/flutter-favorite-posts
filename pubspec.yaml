@@ -27,6 +27,7 @@ dependencies:
   json_annotation:
   bloc_pattern:
   dio:
+  font_awesome_flutter:
 
 dev_dependencies:
   flutter_test:
