@@ -56,13 +56,15 @@ class _PostPageState extends State<PostPage> {
           stream: _postBloc.postListStream,
           builder:
               (BuildContext context, AsyncSnapshot<List<PostModel>> snapshot) {
-            if (snapshot.hasData) {
+            if (snapshot.hasData && snapshot.data.isNotEmpty) {
               return ListView.builder(
+                itemCount: snapshot.data.length,
                 itemBuilder: (BuildContext context, int index) {
                   PostModel postModel = snapshot.data[index];
                   image++;
                   if (image == 6) image = 1;
                   return PostCardWidget(
+                    isInFavoriteList: false,
                     postModel: postModel,
                     index: image,
                   );

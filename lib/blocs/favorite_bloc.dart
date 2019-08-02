@@ -27,6 +27,10 @@ class FavoriteBloc extends BlocBase {
   //método para tratar quando usuário quiser adicionar post na lista de favoritos
   void _handleAdd(PostModel postModel){
     _favoritesModel.posts.add(postModel);
+
+    // sempre que adicionar ou remover um item da lista, atualiza a lista presente no model
+    // e consequentemente deve atualizar a lista que está sendo emitida no controller da lista de favoritos
+    updateList();
   }
 
   //método para atualizar a lista de favoritos com a lista mais atual de favoritos
@@ -36,6 +40,10 @@ class FavoriteBloc extends BlocBase {
 
   void _handleDelete(PostModel postModel){
     _favoritesModel.posts.remove(postModel);
+
+    // sempre que adicionar ou remover um item da lista, atualiza a lista presente no model
+    // e consequentemente deve atualizar a lista que está sendo emitida no controller da lista de favoritos
+    updateList();
   }
 
   @override

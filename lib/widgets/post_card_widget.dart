@@ -7,8 +7,11 @@ import 'package:flutter_favorite_posts/models/post_model.dart';
 class PostCardWidget extends StatefulWidget {
   final PostModel postModel;
   final int index;
+  final bool isInFavoriteList;
 
-  const PostCardWidget({Key key, this.postModel, this.index}) : super(key: key);
+  const PostCardWidget(
+      {Key key, this.postModel, this.index, this.isInFavoriteList})
+      : super(key: key);
 
   @override
   _PostCardWidgetState createState() => _PostCardWidgetState();
@@ -23,7 +26,7 @@ class _PostCardWidgetState extends State<PostCardWidget> {
     _favoriteCardBloc = FavoriteCardBloc(widget.postModel);
 
     // poderia colocar isto no build do widget também
-    WidgetsBinding.instance.addPostFrameCallback((_){
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       _favoriteBloc = BlocProvider.getBloc<FavoriteBloc>();
 
       // sempre que o bloc pai (o bloc que contém a lista dos favoritos) emitir um
@@ -33,7 +36,8 @@ class _PostCardWidgetState extends State<PostCardWidget> {
       // Então eu fico escutando as alterações no favoriteBloc global. Quando emitir um evento,
       // vai atualizar a lista de posts do FavoriteCardBloc. Consequentemente, no bloc do card,
       // vai ficar escutando as atualizações nessa lista, e quando tiver, adiciona o evento no isFavorite
-      _favoriteBloc.favoritesListStream.listen(_favoriteCardBloc.favoritesListSink.add);
+      _favoriteBloc.favoritesListStream
+          .listen(_favoriteCardBloc.favoritesListSink.add);
     });
     super.initState();
   }
@@ -46,9 +50,6 @@ class _PostCardWidgetState extends State<PostCardWidget> {
 
   @override
   Widget build(BuildContext context) {
-
-
-
     return Card(
       shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(10))),
@@ -61,7 +62,7 @@ class _PostCardWidgetState extends State<PostCardWidget> {
                 fit: BoxFit.cover,
                 image: AssetImage("assets/images/${widget.index}.jpg"))),
         width: 200,
-        height: 250,
+        height: widget.isInFavoriteList ? 220 : 250,
         child: Container(
           padding: EdgeInsets.all(10),
           decoration: BoxDecoration(
@@ -73,25 +74,31 @@ class _PostCardWidgetState extends State<PostCardWidget> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Align(
-                alignment: Alignment.centerRight,
-                child: StreamBuilder<bool>(
-                  stream: _favoriteCardBloc.isFavoriteStream,
-                  initialData: false,
-                  builder:
-                      (BuildContext context, AsyncSnapshot<bool> snapshot) {
-                    return IconButton(
-                      icon: Icon(
-                        Icons.favorite,
-                        color: snapshot.data ? Colors.red : Colors.white,
+              widget.isInFavoriteList
+                  ? Container()
+                  : Align(
+                      alignment: Alignment.centerRight,
+                      child: StreamBuilder<bool>(
+                        stream: _favoriteCardBloc.isFavoriteStream,
+                        initialData: false,
+                        builder: (BuildContext context,
+                            AsyncSnapshot<bool> snapshot) {
+                          return IconButton(
+                            icon: Icon(
+                              Icons.favorite,
+                              color: snapshot.data ? Colors.red : Colors.white,
+                            ),
+                            onPressed: () {
+                              snapshot.data
+                                  ? _favoriteBloc.favoritesDeleteSink
+                                      .add(widget.postModel)
+                                  : _favoriteBloc.favoritesAddSink
+                                      .add(widget.postModel);
+                            },
+                          );
+                        },
                       ),
-                      onPressed: () {
-                        print("alguma coisa");
-                      },
-                    );
-                  },
-                ),
-              ),
+                    ),
               Text(
                 "${widget.postModel.title}",
                 style: TextStyle(
@@ -106,6 +113,25 @@ class _PostCardWidgetState extends State<PostCardWidget> {
                 "${widget.postModel.body}",
                 style: TextStyle(color: Colors.white),
               ),
+              widget.isInFavoriteList
+                  ? Column(
+                      children: <Widget>[
+                        SizedBox(
+                          height: 20,
+                        ),
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: Text(
+                            "Swipe to unfavorite",
+                            style: TextStyle(
+                                color: Colors.grey[500],
+                                fontStyle: FontStyle.italic,
+                                fontSize: 12.0),
+                          ),
+                        )
+                      ],
+                    )
+                  : Container()
             ],
           ),
         ),
