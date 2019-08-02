@@ -2,7 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter_favorite_posts/models/post_model.dart';
 
 class PostService {
-  final String baseUrl = "https:/jsonplaceholder.typicode.com/posts";
+  final String baseUrl = "https://jsonplaceholder.typicode.com/posts";
   final Dio dio = Dio();
 
   Future<List<PostModel>> getPosts() async {
@@ -18,6 +18,7 @@ class PostService {
 
       return postList;
     } catch (e) {
+      print(e);
       throw Exception();
     }
   }
